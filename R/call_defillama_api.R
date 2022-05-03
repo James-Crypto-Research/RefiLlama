@@ -17,7 +17,7 @@ call_defillama_api <- function(path) {
   tmp_url <- httr::modify_url("https://api.llama.fi/",path = path)
   resp <- httr::GET(url = tmp_url)
   if (httr::http_error(resp)) {
-    msg <- glue::glue("DefiLlama API request failed ({httr::status_code(resp)})","\n", url)
+    msg <- glue::glue("DefiLlama API request failed ({httr::status_code(resp)})","\n", tmp_url)
     stop(msg, call. = TRUE)
   }
   parsed <- httr::content(resp, as="text", encoding="UTF-8")
