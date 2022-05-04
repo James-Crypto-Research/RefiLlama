@@ -16,7 +16,7 @@ totalLiquidityUSD <- type <-  NULL
 #' @examples
 #' x <- get_protocol_tvl("WBTC")
 get_protocol_tvl <- function(protocol="MakerDAO",category=FALSE){
-  url_protocol <- stringr::str_replace_all(protocol," ","%20")
+  url_protocol <- stringr::str_replace_all(protocol," ","-")
   end_point <- glue::glue("protocol/",url_protocol)
   resp <- call_defillama_api(end_point) |> jsonlite::fromJSON()
   the_chains <- resp$chains
