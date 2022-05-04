@@ -20,7 +20,6 @@ This is the core function connecting to DefiLlama. Since all (most?) API
 }
 \examples{
 \dontrun{
-# Need a valid API to run
-x <- call_defi_api()
+x <- call_defillama_api()
 }
 }

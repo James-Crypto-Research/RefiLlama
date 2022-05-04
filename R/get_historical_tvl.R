@@ -1,7 +1,7 @@
-# This function grabs the historical TVL on all chains
-
 
 #' Get the historical TVL for all protocols denominated in USD
+#'
+#' This function returns the sum of all TVLs for all dates available
 #'
 #' @return a tibble with the date and value
 #' @export
