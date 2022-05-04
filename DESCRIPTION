@@ -16,6 +16,7 @@ Imports:
   plyr,
   purrr,
   rlang,
+  stringr,
   tibble
 Encoding: UTF-8
 LazyData: true
