@@ -13,8 +13,9 @@
 #' \dontrun{
 #' x <- call_defillama_api()
 #' }
-call_defillama_api <- function(path) {
-  tmp_url <- httr::modify_url("https://api.llama.fi/",path = path)
+call_defillama_api <- function(path,type="api") {
+  tmp_url <- paste0("https://",type,".llama.fi")
+  tmp_url <- httr::modify_url(tmp_url,path = path)
   resp <- httr::GET(url = tmp_url)
   if (httr::http_error(resp)) {
     msg <- glue::glue("DefiLlama API request failed ({httr::status_code(resp)})","\n", tmp_url)
