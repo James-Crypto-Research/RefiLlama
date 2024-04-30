@@ -23,8 +23,8 @@ tvl <- name <- chain <- chains <- category <- NULL
 #' @export
 #'
 #' @examples
-#' x <- get_protocol_list(tvl_limit=1E9,which_chain="Polygon")
-get_protocol_list <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
+#' x <- get_list_protocol(tvl_limit=1E9,which_chain="Polygon")
+get_list_protocol <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
   resp <- call_defillama_api("protocols") |> jsonlite::fromJSON()
   tmp <- resp |> dplyr::filter(tvl >= tvl_limit) |> dplyr::select(name,chain, chains,tvl,category) |>
     tibble::as_tibble()
@@ -55,8 +55,8 @@ get_protocol_list <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
 #' @importFrom rlang :=
 #'
 #' @examples
-#' x <- get_protocol_tvl("WBTC")
-get_protocol_tvl <- function(protocol="MakerDAO",category=FALSE){
+#' x <- get_tvl_historical_protocol("uniswap",category=TRUE)
+get_tvl_historical_protocol <- function(protocol="MakerDAO",category=FALSE){
   url_protocol <- stringr::str_replace_all(protocol," ","-")
   end_point <- glue::glue("protocol/",url_protocol)
   resp <- call_defillama_api(end_point) |> jsonlite::fromJSON()
@@ -89,9 +89,9 @@ get_protocol_tvl <- function(protocol="MakerDAO",category=FALSE){
 #' @export
 #'
 #' @examples
-#' x <- get_historical_tvl()
-get_historical_tvl <- function(){
-  x <- call_defillama_api("charts")
+#' x <- get_tvl_historical_all()
+get_tvl_historical_all <- function(){
+  x <- call_defillama_api("v2/historicalChainTvl/")
   x <- jsonlite::fromJSON(x) |>
     tibble::as_tibble() |>
     dplyr::mutate(date = as.Date(as.POSIXct(as.numeric(date),
@@ -113,9 +113,9 @@ get_historical_tvl <- function(){
 #' @importFrom rlang :=
 #'
 #' @examples
-#' x <- get_chain_tvl("Polygon)
-get_chain_tvl <- function(chain="Ethereum"){
-  end_point <- glue::glue("charts/", chain)
+#' x <- get_tvl_historical_chain("Polygon)
+get_tvl_historical_chain <- function(chain="Ethereum"){
+  end_point <- glue::glue("v2/historicalChainTvl/", chain)
   tmp_name <- glue::glue(chain,"_totaltvl")
   x <- call_defillama_api(end_point)
   x <- jsonlite::fromJSON(x) |>
@@ -134,11 +134,28 @@ get_chain_tvl <- function(chain="Ethereum"){
 #' @export
 #'
 #' @examples
-get_current_tvl <- function(){
-  x <- call_defillama_api("chains")
+#' x <- get_tvl_current_all()
+get_tvl_current_all <- function(){
+  x <- call_defillama_api("v2/chains")
   x <- jsonlite::fromJSON(x) |>
     tibble::as_tibble() |>
     dplyr::select(-gecko_id)
+  return(x)
+}
+
+
+#' Get a specific TVL for a protocol
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' x <- get_tvl_current_protocol("Uniswap")
+get_tvl_current_protocol <- function(protocol="Uniswap"){
+  end_point <- glue::glue("tvl/", protocol)
+  x <- call_defillama_api(end_point)
+  x <- jsonlite::fromJSON(x) |>
+    tibble::as_tibble()
   return(x)
 }
 
