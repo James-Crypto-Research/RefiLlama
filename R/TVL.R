@@ -1,7 +1,7 @@
 # This file contains all the API functions around TVL for DefiLllama
 # Creation Date: 2023-12-12
 
-totalLiquidityUSD <- type <-  NULL
+totalLiquidityUSD <- type <- NULL
 tvl <- name <- chain <- chains <- category <- NULL
 
 
@@ -26,15 +26,17 @@ tvl <- name <- chain <- chains <- category <- NULL
 #' x <- get_list_protocol(tvl_limit=1E9,which_chain="Polygon")
 get_list_protocol <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
   resp <- call_defillama_api("protocols") |> jsonlite::fromJSON()
-  tmp <- resp |> dplyr::filter(tvl >= tvl_limit) |> dplyr::select(name,chain, chains,tvl,category) |>
+  tmp <- resp |>
+    dplyr::filter(tvl >= tvl_limit) |>
+    dplyr::select(name, chain, chains, tvl, category) |>
     tibble::as_tibble()
   if (!is.null(which_chain)) {
-    output <- tmp |> dplyr::filter(chain == which_chain )
+    output <- tmp |> dplyr::filter(chain == which_chain)
   } else {
     output <- tmp
   }
   if (details) {
-    output$n_chains <- purrr::map(output$chains,length) |> unlist()
+    output$n_chains <- purrr::map(output$chains, length) |> unlist()
     output$category <- output$category
   } else {
     output <- output |> dplyr::select(name)
@@ -64,17 +66,22 @@ get_tvl_historical_protocol <- function(protocol="MakerDAO",category=FALSE){
 
   tmp_function <- \(z) resp[["chainTvls"]][[z]][["tvl"]] |>
     tibble::as_tibble() |>
-    dplyr::mutate(date=as.Date(as.POSIXct(date,
-                                          origin="1970-01-01 00:00:00",
-                                          tz="UTC")),
-                  {{z}} := totalLiquidityUSD,
-                  totalLiquidityUSD = NULL)
+    dplyr::mutate(
+      date = as.Date(as.POSIXct(date,
+        origin = "1970-01-01 00:00:00",
+        tz = "UTC"
+      )),
+      {{ z }} := totalLiquidityUSD,
+      totalLiquidityUSD = NULL
+    )
 
-  tmp_data <- the_chains |> purrr::map(tmp_function) |>
-    plyr::join_all(by="date") |> tibble::as_tibble()
-  if (category){
+  tmp_data <- the_chains |>
+    purrr::map(tmp_function) |>
+    plyr::join_all(by = "date") |>
+    tibble::as_tibble()
+  if (category) {
     tmp_data$category <- resp[["category"]]
-    tmp_data <- tmp_data |> dplyr::relocate(category,.after=date)
+    tmp_data <- tmp_data |> dplyr::relocate(category, .after = date)
   }
   return(tmp_data)
 }
@@ -118,14 +125,28 @@ get_tvl_historical_chain <- function(chain="Ethereum"){
   end_point <- glue::glue("v2/historicalChainTvl/", chain)
   tmp_name <- glue::glue(chain,"_totaltvl")
   x <- call_defillama_api(end_point)
-  x <- jsonlite::fromJSON(x) |>
-    tibble::as_tibble() |>
-    dplyr::mutate(date = as.Date(as.POSIXct(as.numeric(date),
-                                            origin="1970-01-01 00:00:00",
-                                            tz="UTC"))) |>
-    dplyr::rename( {{tmp_name}} := totalLiquidityUSD)
+  x <- JSONtoTibble(x)|>
+    dplyr::rename({{ tmp_name }} := totalLiquidityUSD)
   return(x)
 }
+
+
+
+#' Get all current TVL of a chain
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_current_tvl <- function(chain = "Ethereum") {
+  end_point <- glue::glue("tvls/", chain)
+  tmp_name <- glue::glue(chain, "_totaltvl")
+  x <- call_defillama_api(end_point)
+  x <- JSONtoTibble(x)|>
+    dplyr::rename({{ tmp_name }} := totalLiquidityUSD)
+  return(x)
+}
+
 
 
 #' Get all current TVLs
