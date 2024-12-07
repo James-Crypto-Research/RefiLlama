@@ -14,8 +14,7 @@ tvl <- name <- chain <- chains <- category <- NULL
 #'
 #'
 #' @param tvl_limit This is the minimum level of Total Value Locked to return
-#' @param which_chain This is what chains to focus on. For ones on multiple chains th
-#'     value "Multi-Chain" chould be used
+#' @param which_chain Optional parameter for what chain to focus on.
 #' @param details Should the type and number and list of chains as well as the category
 #'   be returned?
 #'
@@ -31,7 +30,7 @@ get_list_protocol <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
     dplyr::select(name, chain, chains, tvl, category) |>
     tibble::as_tibble()
   if (!is.null(which_chain)) {
-    output <- tmp |> dplyr::filter(chain == which_chain)
+    output <- tmp |> dplyr::filter(which_chain %in% chain)
   } else {
     output <- tmp
   }
