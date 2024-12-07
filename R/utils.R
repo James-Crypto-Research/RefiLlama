@@ -23,12 +23,12 @@ call_defillama_api <- function(path, type = "api") {
   }
   req_obj <- httr2::request(paste0("https://", type, ".llama.fi"))
   tryCatch({
-    req_obj <- req_obj |> req_url_path(path) |> req_perform()
+    req_obj <- req_obj |> httr2::req_url_path(path) |> httr2::req_perform()
   }, error = function(e) {
     msg <- glue::glue("DefiLlama API request failed ({e$message})", "\n", req_obj$url)
     stop(msg, call. = TRUE)
   })
-  parsed <- req_obj |> resp_body_string()
+  parsed <- req_obj |> httr2::resp_body_string()
   return(parsed)
 }
 
