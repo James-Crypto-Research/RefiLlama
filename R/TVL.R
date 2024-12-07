@@ -23,7 +23,7 @@ tvl <- name <- chain <- chains <- category <- NULL
 #' @export
 #'
 #' @examples
-#' x <- get_list_protocol(tvl_limit=1E9,which_chain="Polygon")
+#' x <- get_list_protocol(tvl_limit=1E9,which_chain="Polygon",details=TRUE)
 get_list_protocol <- function(tvl_limit = 0, which_chain = NULL, details=FALSE){
   resp <- call_defillama_api("protocols") |> jsonlite::fromJSON()
   tmp <- resp |>
