@@ -16,7 +16,7 @@
 call_defillama_api <- function(path, type = "api") {
   # This section checks that the type argument is in the following list
   # of valid types "api","yield","stablecoins","coins","abi-decoder","bridges"
-  valid_types <- c("api", "yield", "stablecoins", "coins", "abi-decoder", "bridges")
+  valid_types <- c("api", "yields", "stablecoins", "coins", "abi-decoder", "bridges")
   if (!(type %in% valid_types)) {
     msg <- glue::glue("Invalid type argument ({type})", "\n", "Valid types are:", "\n", paste(valid_types, collapse = ", "))
     stop(msg, call. = TRUE)
