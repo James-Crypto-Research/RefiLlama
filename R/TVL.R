@@ -97,7 +97,7 @@ get_tvl_historical_protocol <- function(protocol="MakerDAO",category=FALSE){
 #' @examples
 #' x <- get_tvl_historical_all()
 get_tvl_historical_all <- function(){
-  x <- call_defillama_api("v2/historicalChainTvl/")
+  x <- call_defillama_api("v2/historicalChainTvl")
   x <- jsonlite::fromJSON(x) |>
     tibble::as_tibble() |>
     dplyr::mutate(date = as.Date(as.POSIXct(as.numeric(date),
@@ -125,7 +125,7 @@ get_tvl_historical_chain <- function(chain="Ethereum"){
   tmp_name <- glue::glue(chain,"_totaltvl")
   x <- call_defillama_api(end_point)
   x <- JSONtoTibble(x)|>
-    dplyr::rename({{ tmp_name }} := totalLiquidityUSD)
+    dplyr::rename({{ tmp_name }} := tvl)
   return(x)
 }
 
