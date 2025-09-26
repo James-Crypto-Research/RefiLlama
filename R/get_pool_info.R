@@ -5,11 +5,11 @@
 #'
 #' @examples
 #' x <- get_pool_info()
-get_pool_info <- function() {
-  x <- call_defillama_api("pools", type = "yields")
+GetPoolInfo <- function() {
+  x <- CallDefillamaApi("pools", type = "yields")
   x <- jsonlite::fromJSON(x) |>
     tibble::as_tibble() |>
-    dplyr::mutate(date = as.Date(as.POSIXct(as.numeric(date),
+    dplyr::mutate(date = base::as.Date(base::as.POSIXct(base::as.numeric(date),
       origin = "1970-01-01 00:00:00",
       tz = "UTC"
     )))
