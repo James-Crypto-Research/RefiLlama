@@ -124,25 +124,33 @@ GetTvlHistoricalChain <- function(chain = "Ethereum") {
   end_point <- glue::glue("v2/historicalChainTvl/", chain)
   tmp_name <- glue::glue(chain, "_totaltvl")
   x <- CallDefillamaApi(end_point)
-  x <- JsonToTibble(x) |>
-    dplyr::rename({{ tmp_name }} := totalLiquidityUSD)
+  x <- jsonlite::fromJSON(x) |>
+    tibble::as_tibble() |>
+    dplyr::mutate(date = base::as.Date(base::as.POSIXct(base::as.numeric(date),
+                                            origin = "1970-01-01 00:00:00",
+                                            tz = "UTC"))) |>
+    dplyr::rename({{ tmp_name }} := tvl)
   return(x)
 }
 
 
 
-#' Get all current TVL of a chain
+#' Get current TVL of a chain
 #'
-#' @return
+#' @param chain The name of the chain (e.g., "Ethereum", "Polygon")
+#'
+#' @return A tibble with the chain's current TVL
 #' @export
 #'
 #' @examples
+#' x <- GetCurrentTvl("Ethereum")
 GetCurrentTvl <- function(chain = "Ethereum") {
-  end_point <- glue::glue("tvls/", chain)
-  tmp_name <- glue::glue(chain, "_totaltvl")
-  x <- CallDefillamaApi(end_point)
-  x <- JsonToTibble(x) |>
-    dplyr::rename({{ tmp_name }} := totalLiquidityUSD)
+  # Get all chains and filter for the requested one
+  x <- CallDefillamaApi("v2/chains")
+  x <- jsonlite::fromJSON(x) |>
+    tibble::as_tibble() |>
+    dplyr::filter(name == chain) |>
+    dplyr::select(name, tvl)
   return(x)
 }
 

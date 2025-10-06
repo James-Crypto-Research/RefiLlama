@@ -4,14 +4,14 @@
 #' @export
 #'
 #' @examples
-#' x <- get_pool_info()
+#' x <- GetPoolInfo()
 GetPoolInfo <- function() {
   x <- CallDefillamaApi("pools", type = "yields")
-  x <- jsonlite::fromJSON(x) |>
-    tibble::as_tibble() |>
-    dplyr::mutate(date = base::as.Date(base::as.POSIXct(base::as.numeric(date),
-      origin = "1970-01-01 00:00:00",
-      tz = "UTC"
-    )))
+  x <- jsonlite::fromJSON(x)
+  # Extract the data array from the response
+  if ("data" %in% base::names(x)) {
+    x <- x$data
+  }
+  x <- tibble::as_tibble(x)
   return(x)
 }

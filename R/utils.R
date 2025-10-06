@@ -6,16 +6,18 @@
 #'  to parse
 #'
 #' @param path The path to pass to the API URL
+#' @param type The type of API endpoint (api, yields, stablecoins, coins, abi-decoder, bridges)
+#' @param query Optional list of query parameters to append to the URL
 #'
 #' @return a parsed list from the JSON structure
 #'
 #' @examples
 #' \dontrun{
-#' x <- CallDefillamaApi()
+#' x <- CallDefillamaApi("protocols")
 #' }
-CallDefillamaApi <- function(path, type = "api") {
+CallDefillamaApi <- function(path, type = "api", query = NULL) {
   # This section checks that the type argument is in the following list
-  # of valid types "api","yield","stablecoins","coins","abi-decoder","bridges"
+  # of valid types "api","yields","stablecoins","coins","abi-decoder","bridges"
   valid_types <- c("api", "yields", "stablecoins", "coins", "abi-decoder", "bridges")
   if (!(type %in% valid_types)) {
     msg <- glue::glue("Invalid type argument ({type})", "\n", "Valid types are:", "\n", base::paste(valid_types, collapse = ", "))
@@ -23,7 +25,11 @@ CallDefillamaApi <- function(path, type = "api") {
   }
   req_obj <- httr2::request(base::paste0("https://", type, ".llama.fi"))
   tryCatch({
-    req_obj <- req_obj |> httr2::req_url_path(path) |> httr2::req_perform()
+    req_obj <- req_obj |> httr2::req_url_path(path)
+    if (!base::is.null(query)) {
+      req_obj <- req_obj |> httr2::req_url_query(!!!query)
+    }
+    req_obj <- req_obj |> httr2::req_perform()
   }, error = function(e) {
     msg <- glue::glue("DefiLlama API request failed ({e$message})", "\n", req_obj$url)
     base::stop(msg, call. = TRUE)

@@ -14,7 +14,7 @@
 #' get_current_coin_price("bitcoin")
 GetCurrentCoinPrice <- function(coin = "ethereum") {
   coin_id <- glue::glue("coingecko:{coin}")
-  end_point <- glue::glue("prices/current/{coin_id}")
+  end_point <- glue::glue("coins/prices/current/{coin_id}")
   x <- CallDefillamaApi(end_point, type = "coins")
   x <- jsonlite::fromJSON(x)[[1]][[1]] |>
     tibble::as_tibble() |>
@@ -35,7 +35,7 @@ GetCurrentCoinPrice <- function(coin = "ethereum") {
 #' get_earliest_coin_date("bitcoin")
 GetEarliestCoinDate <- function(coin = "ethereum") {
   coin_id <- glue::glue("coingecko:{coin}")
-  end_point <- glue::glue("prices/first/{coin_id}")
+  end_point <- glue::glue("coins/prices/first/{coin_id}")
   x <- CallDefillamaApi(end_point, type = "coins")
   x <- jsonlite::fromJSON(x)[[1]][[1]] |>
     tibble::as_tibble() |>
@@ -59,7 +59,7 @@ GetEarliestCoinDate <- function(coin = "ethereum") {
 #' get_coin_percentage("bitcoin", Sys.time(), FALSE, "24h")
 GetCoinPercentage <- function(coin = "ethereum", timestamp = base::Sys.time(), lookForward = FALSE, period = "24h") {
   coin_id <- glue::glue("coingecko:{coin}")
-  end_point <- glue::glue("prices/percentage/{coin_id}")
+  end_point <- glue::glue("coins/percentage/{coin_id}")
   params <- base::list(timestamp = base::as.numeric(timestamp), lookForward = lookForward, period = period)
   x <- CallDefillamaApi(end_point, type = "coins", query = params)
   x <- jsonlite::fromJSON(x)[[1]][[1]] |>
