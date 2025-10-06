@@ -96,13 +96,8 @@ GetTvlHistoricalProtocol <- function(protocol = "MakerDAO", category = FALSE) {
 #'
 #' @examples
 #' x <- get_tvl_historical_all()
-<<<<<<< HEAD
 GetTvlHistoricalAll <- function() {
   x <- CallDefillamaApi("v2/historicalChainTvl/")
-=======
-get_tvl_historical_all <- function(){
-  x <- call_defillama_api("v2/historicalChainTvl")
->>>>>>> 73dd20c7d124400ae49ce9690b8de770b7d5256d
   x <- jsonlite::fromJSON(x) |>
     tibble::as_tibble() |>
     dplyr::mutate(date = base::as.Date(base::as.POSIXct(base::as.numeric(date),
