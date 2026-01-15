@@ -6,7 +6,7 @@
 #'  to parse
 #'
 #' @param path The path to pass to the API URL
-#' @param type The type of API endpoint (api, yields, stablecoins, coins, abi-decoder, bridges)
+#' @param type The type of API endpoint (api, yields, stablecoins, coins, abi-decoder, bridges, pro-api)
 #' @param query Optional list of query parameters to append to the URL
 #'
 #' @return a parsed list from the JSON structure
@@ -17,13 +17,21 @@
 #' }
 CallDefillamaApi <- function(path, type = "api", query = NULL) {
   # This section checks that the type argument is in the following list
-  # of valid types "api","yields","stablecoins","coins","abi-decoder","bridges"
-  valid_types <- c("api", "yields", "stablecoins", "coins", "abi-decoder", "bridges")
+  # of valid types "api","yields","stablecoins","coins","abi-decoder","bridges","pro-api"
+  valid_types <- c("api", "yields", "stablecoins", "coins", "abi-decoder", "bridges", "pro-api")
   if (!(type %in% valid_types)) {
     msg <- glue::glue("Invalid type argument ({type})", "\n", "Valid types are:", "\n", base::paste(valid_types, collapse = ", "))
     base::stop(msg, call. = TRUE)
   }
-  req_obj <- httr2::request(base::paste0("https://", type, ".llama.fi"))
+
+  # Use pro-api.llama.fi for the new pro-api type, otherwise use legacy URLs
+  if (type == "pro-api") {
+    base_url <- "https://pro-api.llama.fi"
+  } else {
+    base_url <- base::paste0("https://", type, ".llama.fi")
+  }
+
+  req_obj <- httr2::request(base_url)
   tryCatch({
     req_obj <- req_obj |> httr2::req_url_path(path)
     if (!base::is.null(query)) {
